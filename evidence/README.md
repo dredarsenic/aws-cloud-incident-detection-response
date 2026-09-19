@@ -154,3 +154,56 @@ This test validated detection of a high-risk IAM privilege escalation attempt wi
 ### administrator-access-eventbridge-rule.json
 
 Shows the deployed EventBridge rule used to detect attachment of the AWS managed `AdministratorAccess` policy to IAM users, roles, or groups.
+
+## Test 5 - Public SSH Exposure Detection
+
+A synthetic CloudTrail `AuthorizeSecurityGroupIngress` event was submitted representing TCP port 22 being exposed to `0.0.0.0/0`.
+
+Expected detection:
+
+- Event: `AuthorizeSecurityGroupIngress`
+- Port: `22`
+- CIDR: `0.0.0.0/0`
+- Severity: `HIGH`
+- Detection: Security group exposes SSH or RDP to the internet
+- MITRE ATT&CK: `T1133`
+
+Observed result:
+
+- Detection successfully triggered
+- HIGH security incident created
+- Incident recorded in DynamoDB
+- Raw event preserved in Amazon S3
+- SNS email alert successfully delivered
+
+Observed incident:
+
+- Incident ID: `IR-20260919-150503-016b052a`
+
+## Test 6 - Private SSH Negative Test
+
+A second synthetic `AuthorizeSecurityGroupIngress` event was submitted for TCP port 22 restricted to the private CIDR `10.0.0.0/8`.
+
+Expected behavior:
+
+- EventBridge forwards the security-group change
+- Lambda inspects port and CIDR context
+- No security incident is created
+- No evidence object is written
+- No SNS notification is sent
+
+Observed result:
+
+- Lambda returned `No matching security detection.`
+- DynamoDB incident count remained unchanged at 5
+- S3 evidence count remained unchanged at 5
+
+This negative test demonstrates false-positive control by distinguishing publicly exposed remote-management ports from restricted private-network access.
+
+### public-remote-access-eventbridge-rule.json
+
+Shows the deployed EventBridge rule forwarding EC2 `AuthorizeSecurityGroupIngress` API activity to the detection Lambda.
+
+### private-ssh-negative-test.json
+
+Documents the successful negative test confirming that restricted SSH access does not generate a security incident.

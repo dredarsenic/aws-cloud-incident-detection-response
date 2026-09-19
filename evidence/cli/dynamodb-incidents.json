@@ -79,9 +79,29 @@
             "status": {
                 "S": "OPEN"
             }
+        },
+        {
+            "created_at": {
+                "S": "2026-09-19T15:05:03.376986+00:00"
+            },
+            "incident_id": {
+                "S": "IR-20260919-150503-016b052a"
+            },
+            "detection": {
+                "S": "Security group exposes SSH or RDP to the internet"
+            },
+            "event_name": {
+                "S": "AuthorizeSecurityGroupIngress"
+            },
+            "severity": {
+                "S": "HIGH"
+            },
+            "status": {
+                "S": "OPEN"
+            }
         }
     ],
-    "Count": 4,
-    "ScannedCount": 4,
+    "Count": 5,
+    "ScannedCount": 5,
     "ConsumedCapacity": null
 }

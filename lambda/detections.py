@@ -61,6 +61,18 @@ ADMINISTRATOR_ACCESS_DETECTION = {
 }
 
 
+PUBLIC_REMOTE_ACCESS_DETECTION = {
+    "severity": "HIGH",
+    "title": "Security group exposes SSH or RDP to the internet",
+    "mitre_attack": "T1133",
+    "recommended_action": (
+        "Review the security group change and restrict SSH or RDP access "
+        "to trusted administrative networks, VPN ranges, or approved "
+        "management infrastructure."
+    ),
+}
+
+
 ADMIN_POLICY_ARN = "arn:aws:iam::aws:policy/AdministratorAccess"
 
 ADMIN_ATTACHMENT_EVENTS = {
@@ -68,6 +80,61 @@ ADMIN_ATTACHMENT_EVENTS = {
     "AttachRolePolicy",
     "AttachGroupPolicy",
 }
+
+REMOTE_ADMIN_PORTS = {
+    22,
+    3389,
+}
+
+PUBLIC_CIDRS = {
+    "0.0.0.0/0",
+    "::/0",
+}
+
+
+def exposes_public_remote_access(request_parameters):
+    permissions = (
+        request_parameters
+        .get("ipPermissions", {})
+        .get("items", [])
+    )
+
+    for permission in permissions:
+        from_port = permission.get("fromPort")
+        to_port = permission.get("toPort")
+
+        if from_port is None or to_port is None:
+            continue
+
+        exposed_port = any(
+            from_port <= port <= to_port
+            for port in REMOTE_ADMIN_PORTS
+        )
+
+        if not exposed_port:
+            continue
+
+        ipv4_ranges = (
+            permission
+            .get("ipRanges", {})
+            .get("items", [])
+        )
+
+        ipv6_ranges = (
+            permission
+            .get("ipv6Ranges", {})
+            .get("items", [])
+        )
+
+        for ip_range in ipv4_ranges:
+            if ip_range.get("cidrIp") in PUBLIC_CIDRS:
+                return True
+
+        for ip_range in ipv6_ranges:
+            if ip_range.get("cidrIpv6") in PUBLIC_CIDRS:
+                return True
+
+    return False
 
 
 def detect(detail):
@@ -85,6 +152,12 @@ def detect(detail):
         and request_parameters.get("policyArn") == ADMIN_POLICY_ARN
     ):
         return ADMINISTRATOR_ACCESS_DETECTION
+
+    if (
+        event_name == "AuthorizeSecurityGroupIngress"
+        and exposes_public_remote_access(request_parameters)
+    ):
+        return PUBLIC_REMOTE_ACCESS_DETECTION
 
     if identity.get("type") == "Root":
         return ROOT_ACTIVITY_DETECTION

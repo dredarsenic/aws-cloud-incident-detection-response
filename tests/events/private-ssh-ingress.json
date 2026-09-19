@@ -1,0 +1,45 @@
+{
+  "version": "0",
+  "id": "dddddddd-eeee-ffff-1111-222222222222",
+  "detail-type": "AWS API Call via CloudTrail",
+  "source": "aws.ec2",
+  "account": "394624473174",
+  "time": "2026-09-19T15:50:00Z",
+  "region": "eu-west-1",
+  "resources": [],
+  "detail": {
+    "eventVersion": "1.11",
+    "userIdentity": {
+      "type": "IAMUser",
+      "principalId": "TESTNETWORKPRINCIPAL",
+      "arn": "arn:aws:iam::394624473174:user/security-test",
+      "accountId": "394624473174",
+      "userName": "security-test"
+    },
+    "eventTime": "2026-09-19T15:50:00Z",
+    "eventSource": "ec2.amazonaws.com",
+    "eventName": "AuthorizeSecurityGroupIngress",
+    "awsRegion": "eu-west-1",
+    "sourceIPAddress": "203.0.113.50",
+    "userAgent": "aws-cli",
+    "requestParameters": {
+      "groupId": "sg-0123456789abcdef0",
+      "ipPermissions": {
+        "items": [
+          {
+            "ipProtocol": "tcp",
+            "fromPort": 22,
+            "toPort": 22,
+            "ipRanges": {
+              "items": [
+                {
+                  "cidrIp": "10.0.0.0/8"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

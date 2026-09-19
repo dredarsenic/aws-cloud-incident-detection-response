@@ -1,0 +1,9 @@
+{
+  "test": "Private SSH ingress",
+  "port": 22,
+  "source_cidr": "10.0.0.0/8",
+  "lambda_result": "No matching security detection.",
+  "incident_created": false,
+  "evidence_object_created": false,
+  "expected_behavior": "PASS"
+}

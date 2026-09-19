@@ -1,0 +1,6 @@
+{
+    "Name": "aws-cloud-ir-public-remote-access",
+    "State": "ENABLED",
+    "Description": "Detect EC2 security group ingress changes that may expose SSH or RDP publicly.",
+    "EventPattern": "{\"detail\":{\"eventName\":[\"AuthorizeSecurityGroupIngress\"],\"eventSource\":[\"ec2.amazonaws.com\"]},\"detail-type\":[\"AWS API Call via CloudTrail\"],\"source\":[\"aws.ec2\"]}"
+}

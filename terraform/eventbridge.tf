@@ -114,3 +114,39 @@ resource "aws_lambda_permission" "administrator_access_eventbridge" {
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.administrator_access_attachment.arn
 }
+
+resource "aws_cloudwatch_event_rule" "public_remote_access" {
+  name        = "${local.project_name}-public-remote-access"
+  description = "Detect EC2 security group ingress changes that may expose SSH or RDP publicly."
+
+  event_pattern = jsonencode({
+    source = ["aws.ec2"]
+
+    detail-type = [
+      "AWS API Call via CloudTrail"
+    ]
+
+    detail = {
+      eventSource = [
+        "ec2.amazonaws.com"
+      ]
+
+      eventName = [
+        "AuthorizeSecurityGroupIngress"
+      ]
+    }
+  })
+}
+
+resource "aws_cloudwatch_event_target" "public_remote_access" {
+  rule = aws_cloudwatch_event_rule.public_remote_access.name
+  arn  = aws_lambda_function.detector.arn
+}
+
+resource "aws_lambda_permission" "public_remote_access_eventbridge" {
+  statement_id  = "AllowPublicRemoteAccessFromEventBridge"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.detector.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.public_remote_access.arn
+}
