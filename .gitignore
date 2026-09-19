@@ -3,7 +3,6 @@
 *.tfstate
 *.tfstate.*
 *.tfvars
-.terraform.lock.hcl
 terraform/lambda.zip
 
 # Python
@@ -21,3 +20,4 @@ __pycache__/
 .idea/
 .DS_Store
 Thumbs.db
+*.tfplan

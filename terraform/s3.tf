@@ -1,6 +1,6 @@
 resource "aws_s3_bucket" "cloudtrail_logs" {
   bucket_prefix = "aws-cloud-ir-audit-"
-  force_destroy = true
+  force_destroy = false
 }
 
 resource "aws_s3_bucket_versioning" "cloudtrail_logs" {
@@ -33,7 +33,7 @@ resource "aws_s3_bucket_public_access_block" "cloudtrail_logs" {
 
 resource "aws_s3_bucket" "incident_evidence" {
   bucket_prefix = "aws-cloud-ir-evidence-"
-  force_destroy = true
+  force_destroy = false
 }
 
 resource "aws_s3_bucket_versioning" "incident_evidence" {
