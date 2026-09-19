@@ -1,0 +1,30 @@
+{
+  "version": "0",
+  "id": "bbbbbbbb-cccc-dddd-eeee-ffffffffffff",
+  "detail-type": "AWS API Call via CloudTrail",
+  "source": "aws.iam",
+  "account": "394624473174",
+  "time": "2026-09-19T15:20:00Z",
+  "region": "eu-west-1",
+  "resources": [],
+  "detail": {
+    "eventVersion": "1.11",
+    "userIdentity": {
+      "type": "IAMUser",
+      "principalId": "TESTADMINPRINCIPAL",
+      "arn": "arn:aws:iam::394624473174:user/security-test",
+      "accountId": "394624473174",
+      "userName": "security-test"
+    },
+    "eventTime": "2026-09-19T15:20:00Z",
+    "eventSource": "iam.amazonaws.com",
+    "eventName": "AttachRolePolicy",
+    "awsRegion": "eu-west-1",
+    "sourceIPAddress": "203.0.113.30",
+    "userAgent": "aws-cli",
+    "requestParameters": {
+      "roleName": "ProductionApplicationRole",
+      "policyArn": "arn:aws:iam::aws:policy/AdministratorAccess"
+    }
+  }
+}

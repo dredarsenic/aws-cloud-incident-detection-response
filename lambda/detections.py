@@ -49,17 +49,43 @@ ROOT_ACTIVITY_DETECTION = {
 }
 
 
+ADMINISTRATOR_ACCESS_DETECTION = {
+    "severity": "CRITICAL",
+    "title": "AdministratorAccess policy attached",
+    "mitre_attack": "T1098",
+    "recommended_action": (
+        "Validate whether the privilege escalation was authorized, identify "
+        "the affected IAM principal, and remove AdministratorAccess if the "
+        "change was unexpected or malicious."
+    ),
+}
+
+
+ADMIN_POLICY_ARN = "arn:aws:iam::aws:policy/AdministratorAccess"
+
+ADMIN_ATTACHMENT_EVENTS = {
+    "AttachUserPolicy",
+    "AttachRolePolicy",
+    "AttachGroupPolicy",
+}
+
+
 def detect(detail):
     event_name = detail.get("eventName")
     identity = detail.get("userIdentity", {})
+    request_parameters = detail.get("requestParameters", {})
 
-    # Prefer a specific high-confidence event detection when available.
     event_detection = EVENT_DETECTIONS.get(event_name)
 
     if event_detection:
         return event_detection
 
-    # Detect any other AWS API activity performed using the root identity.
+    if (
+        event_name in ADMIN_ATTACHMENT_EVENTS
+        and request_parameters.get("policyArn") == ADMIN_POLICY_ARN
+    ):
+        return ADMINISTRATOR_ACCESS_DETECTION
+
     if identity.get("type") == "Root":
         return ROOT_ACTIVITY_DETECTION
 

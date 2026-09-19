@@ -70,3 +70,47 @@ resource "aws_lambda_permission" "root_activity_eventbridge" {
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.root_activity.arn
 }
+
+resource "aws_cloudwatch_event_rule" "administrator_access_attachment" {
+  name        = "${local.project_name}-administrator-access-attachment"
+  description = "Detect AdministratorAccess policy attachments to IAM users, roles, or groups."
+
+  event_pattern = jsonencode({
+    source = ["aws.iam"]
+
+    detail-type = [
+      "AWS API Call via CloudTrail"
+    ]
+
+    detail = {
+      eventSource = [
+        "iam.amazonaws.com"
+      ]
+
+      eventName = [
+        "AttachUserPolicy",
+        "AttachRolePolicy",
+        "AttachGroupPolicy"
+      ]
+
+      requestParameters = {
+        policyArn = [
+          "arn:aws:iam::aws:policy/AdministratorAccess"
+        ]
+      }
+    }
+  })
+}
+
+resource "aws_cloudwatch_event_target" "administrator_access_attachment" {
+  rule = aws_cloudwatch_event_rule.administrator_access_attachment.name
+  arn  = aws_lambda_function.detector.arn
+}
+
+resource "aws_lambda_permission" "administrator_access_eventbridge" {
+  statement_id  = "AllowAdministratorAccessFromEventBridge"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.detector.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.administrator_access_attachment.arn
+}

@@ -122,3 +122,35 @@ No real AWS root account activity was performed during testing.
 ### root-activity-eventbridge-rule.json
 
 Shows the deployed EventBridge rule used to identify AWS API activity where the CloudTrail `userIdentity.type` is `Root`.
+
+## Test 4 - AdministratorAccess Privilege Escalation Detection
+
+A synthetic CloudTrail event representing an IAM `AttachRolePolicy` operation was submitted to the deployed detection Lambda.
+
+The event simulated attachment of the AWS managed `AdministratorAccess` policy to an IAM role.
+
+The deployed EventBridge rule was independently tested using the AWS Events `test-event-pattern` API and successfully matched the event.
+
+Expected detection:
+
+- Event: `AttachRolePolicy`
+- Policy: `AdministratorAccess`
+- Severity: `CRITICAL`
+- Detection: AdministratorAccess policy attached
+- MITRE ATT&CK: `T1098`
+- Response mode: `alert`
+
+Observed incident:
+
+- Incident ID: `IR-20260919-145823-3988da73`
+- Status: `OPEN`
+- EventBridge pattern match: `true`
+- Evidence successfully preserved in Amazon S3
+- Incident successfully recorded in DynamoDB
+- CRITICAL SNS alert successfully generated
+
+This test validated detection of a high-risk IAM privilege escalation attempt without modifying a real IAM role.
+
+### administrator-access-eventbridge-rule.json
+
+Shows the deployed EventBridge rule used to detect attachment of the AWS managed `AdministratorAccess` policy to IAM users, roles, or groups.

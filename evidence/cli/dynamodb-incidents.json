@@ -59,9 +59,29 @@
             "status": {
                 "S": "OPEN"
             }
+        },
+        {
+            "created_at": {
+                "S": "2026-09-19T14:58:23.878291+00:00"
+            },
+            "incident_id": {
+                "S": "IR-20260919-145823-3988da73"
+            },
+            "detection": {
+                "S": "AdministratorAccess policy attached"
+            },
+            "event_name": {
+                "S": "AttachRolePolicy"
+            },
+            "severity": {
+                "S": "CRITICAL"
+            },
+            "status": {
+                "S": "OPEN"
+            }
         }
     ],
-    "Count": 3,
-    "ScannedCount": 3,
+    "Count": 4,
+    "ScannedCount": 4,
     "ConsumedCapacity": null
 }

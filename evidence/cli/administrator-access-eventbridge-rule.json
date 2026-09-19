@@ -1,0 +1,6 @@
+{
+    "Name": "aws-cloud-ir-administrator-access-attachment",
+    "State": "ENABLED",
+    "Description": "Detect AdministratorAccess policy attachments to IAM users, roles, or groups.",
+    "EventPattern": "{\"detail\":{\"eventName\":[\"AttachUserPolicy\",\"AttachRolePolicy\",\"AttachGroupPolicy\"],\"eventSource\":[\"iam.amazonaws.com\"],\"requestParameters\":{\"policyArn\":[\"arn:aws:iam::aws:policy/AdministratorAccess\"]}},\"detail-type\":[\"AWS API Call via CloudTrail\"],\"source\":[\"aws.iam\"]}"
+}
