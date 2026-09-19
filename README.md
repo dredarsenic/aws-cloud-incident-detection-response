@@ -1,6 +1,5 @@
 # AWS Cloud Incident Detection & Automated Response
-\n**Status: ✅ Completed — v1.0 | 19 September 2026**
-
+**Status: ✅ Completed — v1.0 | 19 September 2026**
 
 **Detect. Investigate. Preserve. Respond.**
 

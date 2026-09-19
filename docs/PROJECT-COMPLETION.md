@@ -1,8 +1,8 @@
 # AWS Cloud Incident Detection & Automated Response
 ## Project Completion Summary
 
-**Status:** Completed  
-**Version:** v1.0  
+**Status:** Completed
+**Version:** v1.0
 **Completion Date:** 19 September 2026
 
 ## Objective
