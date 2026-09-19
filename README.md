@@ -103,3 +103,10 @@ The implemented platform demonstrates AWS-native detection engineering, incident
 Detailed completion notes are available in [`docs/PROJECT-COMPLETION.md`](docs/PROJECT-COMPLETION.md).
 
 Future enhancements will be developed as a separate v2 rather than extending the scope of this completed version.
+
+## Architecture Diagram
+
+<p align="center">
+  <img src="docs/images/aws-cloud-incident-detection-response.png" alt="AWS Cloud Incident Detection & Automated Response Architecture" width="1000">
+</p>
+
