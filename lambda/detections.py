@@ -1,4 +1,4 @@
-DETECTIONS = {
+EVENT_DETECTIONS = {
     "StopLogging": {
         "severity": "CRITICAL",
         "title": "CloudTrail logging disabled",
@@ -38,5 +38,29 @@ DETECTIONS = {
 }
 
 
-def detect(event_name):
-    return DETECTIONS.get(event_name)
+ROOT_ACTIVITY_DETECTION = {
+    "severity": "CRITICAL",
+    "title": "AWS root account activity detected",
+    "mitre_attack": "T1078.004",
+    "recommended_action": (
+        "Validate whether root account usage was authorized, review MFA "
+        "protection and source context, and investigate surrounding activity."
+    ),
+}
+
+
+def detect(detail):
+    event_name = detail.get("eventName")
+    identity = detail.get("userIdentity", {})
+
+    # Prefer a specific high-confidence event detection when available.
+    event_detection = EVENT_DETECTIONS.get(event_name)
+
+    if event_detection:
+        return event_detection
+
+    # Detect any other AWS API activity performed using the root identity.
+    if identity.get("type") == "Root":
+        return ROOT_ACTIVITY_DETECTION
+
+    return None

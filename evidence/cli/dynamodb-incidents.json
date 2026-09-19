@@ -7,6 +7,9 @@
             "incident_id": {
                 "S": "IR-20260919-143204-246e74f5"
             },
+            "detection": {
+                "S": "CloudTrail configuration modified"
+            },
             "event_name": {
                 "S": "UpdateTrail"
             },
@@ -24,6 +27,9 @@
             "incident_id": {
                 "S": "IR-20260919-142902-7a645bc0"
             },
+            "detection": {
+                "S": "CloudTrail logging disabled"
+            },
             "event_name": {
                 "S": "StopLogging"
             },
@@ -33,9 +39,29 @@
             "status": {
                 "S": "OPEN"
             }
+        },
+        {
+            "created_at": {
+                "S": "2026-09-19T14:50:00.788840+00:00"
+            },
+            "incident_id": {
+                "S": "IR-20260919-145000-76e699ee"
+            },
+            "detection": {
+                "S": "AWS root account activity detected"
+            },
+            "event_name": {
+                "S": "ListUsers"
+            },
+            "severity": {
+                "S": "CRITICAL"
+            },
+            "status": {
+                "S": "OPEN"
+            }
         }
     ],
-    "Count": 2,
-    "ScannedCount": 2,
+    "Count": 3,
+    "ScannedCount": 3,
     "ConsumedCapacity": null
 }

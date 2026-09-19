@@ -124,7 +124,7 @@ def lambda_handler(event, context):
     detail = event.get("detail", {})
     event_name = detail.get("eventName")
 
-    detection = detect(event_name)
+    detection = detect(detail)
 
     if not detection:
         return {

@@ -1,0 +1,6 @@
+{
+    "Name": "aws-cloud-ir-root-activity",
+    "State": "ENABLED",
+    "Description": "Detect AWS API activity performed using the root account.",
+    "EventPattern": "{\"detail\":{\"userIdentity\":{\"type\":[\"Root\"]}},\"detail-type\":[\"AWS API Call via CloudTrail\"],\"source\":[\"aws.cloudtrail\"]}"
+}

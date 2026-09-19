@@ -90,3 +90,35 @@ Shows the forensic event objects preserved by the detection Lambda.
 Evidence committed to this repository is intentionally sanitized. AWS credentials, secrets, Terraform state, local configuration, personal email information, and unnecessary source-IP information are not included.
 
 Raw incident evidence remains stored in the dedicated encrypted and versioned S3 evidence bucket.
+
+## Test 3 - AWS Root Account Activity Detection
+
+A synthetic CloudTrail event representing AWS API activity performed using the root identity was submitted to the deployed detection Lambda.
+
+The EventBridge event pattern was also independently tested using the AWS Events `test-event-pattern` API and returned a successful match.
+
+Expected detection:
+
+- Identity type: `Root`
+- Event: `ListUsers`
+- Severity: `CRITICAL`
+- Detection: AWS root account activity detected
+- MITRE ATT&CK: `T1078.004`
+- Response mode: `alert`
+
+Observed incident:
+
+- Incident ID: `IR-20260919-145000-76e699ee`
+- Status: `OPEN`
+- EventBridge pattern match: `true`
+- Evidence successfully preserved in Amazon S3
+- Incident successfully recorded in DynamoDB
+- CRITICAL SNS email alert successfully delivered
+
+This test validated identity-based detection in addition to event-name-based detection.
+
+No real AWS root account activity was performed during testing.
+
+### root-activity-eventbridge-rule.json
+
+Shows the deployed EventBridge rule used to identify AWS API activity where the CloudTrail `userIdentity.type` is `Root`.
