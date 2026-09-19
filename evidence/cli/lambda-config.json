@@ -1,0 +1,8 @@
+{
+    "FunctionName": "aws-cloud-ir-detection-engine",
+    "Runtime": "python3.12",
+    "Handler": "incident_handler.lambda_handler",
+    "Timeout": 30,
+    "State": "Active",
+    "LastUpdateStatus": "Successful"
+}

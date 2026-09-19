@@ -76,3 +76,19 @@ flowchart TD
 ## Disclaimer
 
 This project is intended for controlled AWS lab environments. Automated containment must be thoroughly tested before being enabled in production.
+
+## Deployment & Detection Evidence
+
+The platform has been deployed and validated using both synthetic and real AWS API activity.
+
+Testing confirmed:
+
+- CRITICAL detection of simulated CloudTrail `StopLogging` activity.
+- HIGH detection of a real `UpdateTrail` AWS API call.
+- CloudTrail to EventBridge event routing.
+- Lambda detection and incident normalization.
+- S3 evidence preservation.
+- DynamoDB incident recording.
+- SNS email alert delivery.
+
+See [`evidence/README.md`](evidence/README.md) for the deployment and testing evidence.

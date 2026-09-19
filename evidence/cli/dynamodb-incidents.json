@@ -1,0 +1,41 @@
+{
+    "Items": [
+        {
+            "created_at": {
+                "S": "2026-09-19T14:32:04.368345+00:00"
+            },
+            "incident_id": {
+                "S": "IR-20260919-143204-246e74f5"
+            },
+            "event_name": {
+                "S": "UpdateTrail"
+            },
+            "severity": {
+                "S": "HIGH"
+            },
+            "status": {
+                "S": "OPEN"
+            }
+        },
+        {
+            "created_at": {
+                "S": "2026-09-19T14:29:02.344430+00:00"
+            },
+            "incident_id": {
+                "S": "IR-20260919-142902-7a645bc0"
+            },
+            "event_name": {
+                "S": "StopLogging"
+            },
+            "severity": {
+                "S": "CRITICAL"
+            },
+            "status": {
+                "S": "OPEN"
+            }
+        }
+    ],
+    "Count": 2,
+    "ScannedCount": 2,
+    "ConsumedCapacity": null
+}

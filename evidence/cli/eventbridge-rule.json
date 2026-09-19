@@ -1,0 +1,6 @@
+{
+    "Name": "aws-cloud-ir-cloudtrail-tampering",
+    "State": "ENABLED",
+    "Description": "Detect attempts to disable or modify CloudTrail logging.",
+    "EventPattern": "{\"detail\":{\"eventName\":[\"StopLogging\",\"DeleteTrail\",\"UpdateTrail\",\"PutEventSelectors\"],\"eventSource\":[\"cloudtrail.amazonaws.com\"]},\"detail-type\":[\"AWS API Call via CloudTrail\"],\"source\":[\"aws.cloudtrail\"]}"
+}
