@@ -1,0 +1,6 @@
+{
+    "Name": "aws-cloud-ir-guardduty-findings",
+    "State": "ENABLED",
+    "Description": "Route GuardDuty findings to the cloud incident detection engine.",
+    "EventPattern": "{\"detail-type\":[\"GuardDuty Finding\"],\"source\":[\"aws.guardduty\"]}"
+}

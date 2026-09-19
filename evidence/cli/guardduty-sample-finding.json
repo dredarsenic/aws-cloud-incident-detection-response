@@ -1,0 +1,11 @@
+{
+    "FindingId": "d4542c530f9449029a27db0eeaed3a3d",
+    "Type": "UnauthorizedAccess:EC2/TorClient",
+    "Severity": 8.0,
+    "Title": "The EC2 instance i-99999999 is communicating with a Tor entry node.",
+    "Description": "The EC2 instance i-99999999 is communicating with IP address 198.51.100.0 on the Tor Anonymizing Proxy network marked as an entry node.",
+    "ResourceType": "Instance",
+    "InstanceId": "i-99999999",
+    "ActionType": "NETWORK_CONNECTION",
+    "UpdatedAt": "2026-09-19T16:07:00.995Z"
+}

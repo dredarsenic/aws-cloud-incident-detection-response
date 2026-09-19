@@ -2,6 +2,26 @@
     "Items": [
         {
             "created_at": {
+                "S": "2026-09-19T16:07:05.437596+00:00"
+            },
+            "incident_id": {
+                "S": "IR-20260919-160705-fd9815ad"
+            },
+            "detection": {
+                "S": "GuardDuty finding: The EC2 instance i-99999999 is communicating with a Tor entry node."
+            },
+            "event_name": {
+                "S": "UnauthorizedAccess:EC2/TorClient"
+            },
+            "severity": {
+                "S": "HIGH"
+            },
+            "status": {
+                "S": "OPEN"
+            }
+        },
+        {
+            "created_at": {
                 "S": "2026-09-19T14:32:04.368345+00:00"
             },
             "incident_id": {
@@ -35,6 +55,26 @@
             },
             "severity": {
                 "S": "CRITICAL"
+            },
+            "status": {
+                "S": "OPEN"
+            }
+        },
+        {
+            "created_at": {
+                "S": "2026-09-19T15:17:38.233526+00:00"
+            },
+            "incident_id": {
+                "S": "IR-20260919-151737-828962f5"
+            },
+            "detection": {
+                "S": "IAM access key created"
+            },
+            "event_name": {
+                "S": "CreateAccessKey"
+            },
+            "severity": {
+                "S": "MEDIUM"
             },
             "status": {
                 "S": "OPEN"
@@ -101,7 +141,7 @@
             }
         }
     ],
-    "Count": 5,
-    "ScannedCount": 5,
+    "Count": 7,
+    "ScannedCount": 7,
     "ConsumedCapacity": null
 }

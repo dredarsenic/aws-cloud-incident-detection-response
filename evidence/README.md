@@ -207,3 +207,45 @@ Shows the deployed EventBridge rule forwarding EC2 `AuthorizeSecurityGroupIngres
 ### private-ssh-negative-test.json
 
 Documents the successful negative test confirming that restricted SSH access does not generate a security incident.
+
+## Test 7 - Amazon GuardDuty Managed Threat Detection
+
+Amazon GuardDuty was integrated with the custom incident-response pipeline using Amazon EventBridge.
+
+An official AWS GuardDuty sample finding was generated using the GuardDuty `create-sample-findings` API. No malicious activity was performed.
+
+Finding tested:
+
+- Type: `UnauthorizedAccess:EC2/TorClient`
+- Severity: `HIGH`
+- Resource: Sample EC2 instance
+- Source: Amazon GuardDuty managed detection
+- Response mode: `alert`
+
+Observed incident:
+
+- Incident ID: `IR-20260919-160705-fd9815ad`
+- Status: `OPEN`
+- GuardDuty finding successfully delivered to EventBridge
+- Lambda successfully normalized the GuardDuty finding
+- Affected EC2 resource successfully extracted
+- Raw GuardDuty evidence preserved in Amazon S3
+- Incident successfully recorded in DynamoDB
+- HIGH SNS email alert successfully delivered
+
+This test validated integration between an AWS-managed threat detection service and the custom incident-response platform:
+
+GuardDuty
+-> EventBridge
+-> Lambda Detection Engine
+-> S3 Evidence Preservation
+-> DynamoDB Incident Record
+-> SNS Security Alert
+
+### guardduty-eventbridge-rule.json
+
+Shows the deployed EventBridge rule used to route GuardDuty findings into the incident detection Lambda.
+
+### guardduty-sample-finding.json
+
+Contains a sanitized representation of the official AWS sample GuardDuty finding used to validate the integration.

@@ -29,6 +29,80 @@ def get_principal(detail):
     )
 
 
+def get_guardduty_source_ip(detail):
+    action = detail.get("service", {}).get("action", {})
+
+    network_action = action.get("networkConnectionAction", {})
+    remote_ip = network_action.get("remoteIpDetails", {})
+
+    ip_address = (
+        remote_ip.get("ipAddressV4")
+        or remote_ip.get("ipAddressV6")
+    )
+
+    if ip_address:
+        return ip_address
+
+    api_action = action.get("awsApiCallAction", {})
+    remote_ip = api_action.get("remoteIpDetails", {})
+
+    return (
+        remote_ip.get("ipAddressV4")
+        or remote_ip.get("ipAddressV6")
+        or "unknown"
+    )
+
+
+def get_guardduty_resource(detail):
+    resource = detail.get("resource", {})
+    resource_type = resource.get("resourceType", "unknown")
+
+    instance_id = (
+        resource
+        .get("instanceDetails", {})
+        .get("instanceId")
+    )
+
+    access_key_id = (
+        resource
+        .get("accessKeyDetails", {})
+        .get("accessKeyId")
+    )
+
+    bucket_name = (
+        resource
+        .get("s3BucketDetails", [{}])[0]
+        .get("name")
+        if resource.get("s3BucketDetails")
+        else None
+    )
+
+    return (
+        instance_id
+        or access_key_id
+        or bucket_name
+        or resource_type
+    )
+
+
+def normalize_guardduty_severity(severity):
+    try:
+        severity = float(severity)
+    except (TypeError, ValueError):
+        return "UNKNOWN"
+
+    if severity >= 9:
+        return "CRITICAL"
+
+    if severity >= 7:
+        return "HIGH"
+
+    if severity >= 4:
+        return "MEDIUM"
+
+    return "LOW"
+
+
 def generate_incident_id():
     now = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
     suffix = uuid.uuid4().hex[:8]
@@ -100,6 +174,9 @@ Event:
 Event Time:
 {incident['event_time']}
 
+Resource:
+{incident.get('resource', 'unknown')}
+
 MITRE ATT&CK:
 {incident['mitre_attack']}
 
@@ -120,7 +197,85 @@ s3://{EVIDENCE_BUCKET}/{incident['evidence_key']}
     )
 
 
+def handle_guardduty_finding(event):
+    detail = event.get("detail", {})
+
+    incident_id = generate_incident_id()
+    evidence_key = preserve_evidence(
+        incident_id,
+        event,
+    )
+
+    finding_type = detail.get(
+        "type",
+        "GuardDutyFinding",
+    )
+
+    finding_title = detail.get(
+        "title",
+        finding_type,
+    )
+
+    severity = normalize_guardduty_severity(
+        detail.get("severity")
+    )
+
+    incident = {
+        "incident_id": incident_id,
+        "status": "OPEN",
+        "severity": severity,
+        "detection": f"GuardDuty finding: {finding_title}",
+        "event_name": finding_type,
+        "aws_account": detail.get(
+            "accountId",
+            event.get("account", "unknown"),
+        ),
+        "region": detail.get(
+            "region",
+            event.get("region", "unknown"),
+        ),
+        "principal": "GuardDuty",
+        "source_ip": get_guardduty_source_ip(detail),
+        "event_time": detail.get(
+            "updatedAt",
+            event.get("time", "unknown"),
+        ),
+        "resource": get_guardduty_resource(detail),
+        "mitre_attack": "GuardDuty managed detection",
+        "recommended_action": (
+            "Review the GuardDuty finding, affected resource, related "
+            "activity, and remediation guidance. Contain the affected "
+            "resource or credentials if the finding is confirmed."
+        ),
+        "response_mode": RESPONSE_MODE,
+        "evidence_key": evidence_key,
+        "guardduty_finding_id": detail.get("id", "unknown"),
+        "guardduty_severity": str(
+            detail.get("severity", "unknown")
+        ),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+    store_incident(incident)
+    send_alert(incident)
+
+    print(
+        json.dumps(
+            incident,
+            indent=2,
+        )
+    )
+
+    return incident
+
+
 def lambda_handler(event, context):
+    if (
+        event.get("source") == "aws.guardduty"
+        and event.get("detail-type") == "GuardDuty Finding"
+    ):
+        return handle_guardduty_finding(event)
+
     detail = event.get("detail", {})
     event_name = detail.get("eventName")
 
@@ -153,6 +308,7 @@ def lambda_handler(event, context):
             "eventTime",
             event.get("time", "unknown"),
         ),
+        "resource": "unknown",
         "mitre_attack": detection["mitre_attack"],
         "recommended_action": detection["recommended_action"],
         "response_mode": RESPONSE_MODE,
