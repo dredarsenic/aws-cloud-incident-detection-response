@@ -2,146 +2,236 @@
     "Items": [
         {
             "created_at": {
+                "S": "2026-09-19T16:12:38.937456+00:00"
+            },
+            "detection": {
+                "S": "GuardDuty finding: The API ListObjects was invoked from a remote host potentially running Kali Linux."
+            },
+            "status": {
+                "S": "OPEN"
+            },
+            "incident_id": {
+                "S": "IR-20260919-161238-d17bd31c"
+            },
+            "response_mode": {
+                "S": "alert"
+            },
+            "event_name": {
+                "S": "PenTest:S3/KaliLinux"
+            },
+            "severity": {
+                "S": "MEDIUM"
+            }
+        },
+        {
+            "created_at": {
                 "S": "2026-09-19T16:07:05.437596+00:00"
+            },
+            "detection": {
+                "S": "GuardDuty finding: The EC2 instance i-99999999 is communicating with a Tor entry node."
+            },
+            "status": {
+                "S": "OPEN"
             },
             "incident_id": {
                 "S": "IR-20260919-160705-fd9815ad"
             },
-            "detection": {
-                "S": "GuardDuty finding: The EC2 instance i-99999999 is communicating with a Tor entry node."
+            "response_mode": {
+                "S": "alert"
             },
             "event_name": {
                 "S": "UnauthorizedAccess:EC2/TorClient"
             },
             "severity": {
                 "S": "HIGH"
-            },
-            "status": {
-                "S": "OPEN"
             }
         },
         {
             "created_at": {
                 "S": "2026-09-19T14:32:04.368345+00:00"
             },
+            "detection": {
+                "S": "CloudTrail configuration modified"
+            },
+            "status": {
+                "S": "OPEN"
+            },
             "incident_id": {
                 "S": "IR-20260919-143204-246e74f5"
             },
-            "detection": {
-                "S": "CloudTrail configuration modified"
+            "response_mode": {
+                "S": "alert"
             },
             "event_name": {
                 "S": "UpdateTrail"
             },
             "severity": {
                 "S": "HIGH"
-            },
-            "status": {
-                "S": "OPEN"
             }
         },
         {
             "created_at": {
                 "S": "2026-09-19T14:29:02.344430+00:00"
             },
+            "detection": {
+                "S": "CloudTrail logging disabled"
+            },
+            "status": {
+                "S": "OPEN"
+            },
             "incident_id": {
                 "S": "IR-20260919-142902-7a645bc0"
             },
-            "detection": {
-                "S": "CloudTrail logging disabled"
+            "response_mode": {
+                "S": "alert"
             },
             "event_name": {
                 "S": "StopLogging"
             },
             "severity": {
                 "S": "CRITICAL"
-            },
-            "status": {
-                "S": "OPEN"
             }
         },
         {
             "created_at": {
                 "S": "2026-09-19T15:17:38.233526+00:00"
             },
+            "detection": {
+                "S": "IAM access key created"
+            },
+            "status": {
+                "S": "OPEN"
+            },
             "incident_id": {
                 "S": "IR-20260919-151737-828962f5"
             },
-            "detection": {
-                "S": "IAM access key created"
+            "response_mode": {
+                "S": "alert"
             },
             "event_name": {
                 "S": "CreateAccessKey"
             },
             "severity": {
                 "S": "MEDIUM"
-            },
-            "status": {
-                "S": "OPEN"
             }
         },
         {
             "created_at": {
                 "S": "2026-09-19T14:50:00.788840+00:00"
             },
+            "detection": {
+                "S": "AWS root account activity detected"
+            },
+            "status": {
+                "S": "OPEN"
+            },
             "incident_id": {
                 "S": "IR-20260919-145000-76e699ee"
             },
-            "detection": {
-                "S": "AWS root account activity detected"
+            "response_mode": {
+                "S": "alert"
             },
             "event_name": {
                 "S": "ListUsers"
             },
             "severity": {
                 "S": "CRITICAL"
-            },
-            "status": {
-                "S": "OPEN"
             }
         },
         {
             "created_at": {
                 "S": "2026-09-19T14:58:23.878291+00:00"
             },
+            "detection": {
+                "S": "AdministratorAccess policy attached"
+            },
+            "status": {
+                "S": "OPEN"
+            },
             "incident_id": {
                 "S": "IR-20260919-145823-3988da73"
             },
-            "detection": {
-                "S": "AdministratorAccess policy attached"
+            "response_mode": {
+                "S": "alert"
             },
             "event_name": {
                 "S": "AttachRolePolicy"
             },
             "severity": {
                 "S": "CRITICAL"
-            },
-            "status": {
-                "S": "OPEN"
             }
         },
         {
             "created_at": {
                 "S": "2026-09-19T15:05:03.376986+00:00"
             },
+            "detection": {
+                "S": "Security group exposes SSH or RDP to the internet"
+            },
+            "status": {
+                "S": "OPEN"
+            },
             "incident_id": {
                 "S": "IR-20260919-150503-016b052a"
             },
-            "detection": {
-                "S": "Security group exposes SSH or RDP to the internet"
+            "response_mode": {
+                "S": "alert"
             },
             "event_name": {
                 "S": "AuthorizeSecurityGroupIngress"
             },
             "severity": {
                 "S": "HIGH"
+            }
+        },
+        {
+            "created_at": {
+                "S": "2026-09-19T16:16:47.168038+00:00"
+            },
+            "detection": {
+                "S": "Security group exposes SSH or RDP to the internet"
             },
             "status": {
                 "S": "OPEN"
+            },
+            "incident_id": {
+                "S": "IR-20260919-161646-88631fb2"
+            },
+            "response_mode": {
+                "S": "alert"
+            },
+            "event_name": {
+                "S": "AuthorizeSecurityGroupIngress"
+            },
+            "severity": {
+                "S": "HIGH"
+            }
+        },
+        {
+            "created_at": {
+                "S": "2026-09-19T16:20:42.163684+00:00"
+            },
+            "detection": {
+                "S": "Security group exposes SSH or RDP to the internet"
+            },
+            "status": {
+                "S": "OPEN"
+            },
+            "incident_id": {
+                "S": "IR-20260919-162041-381dd90c"
+            },
+            "response_mode": {
+                "S": "contain"
+            },
+            "event_name": {
+                "S": "AuthorizeSecurityGroupIngress"
+            },
+            "severity": {
+                "S": "HIGH"
             }
         }
     ],
-    "Count": 7,
-    "ScannedCount": 7,
+    "Count": 10,
+    "ScannedCount": 10,
     "ConsumedCapacity": null
 }

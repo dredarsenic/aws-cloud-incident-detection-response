@@ -150,3 +150,39 @@ resource "aws_lambda_permission" "public_remote_access_eventbridge" {
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.public_remote_access.arn
 }
+
+resource "aws_cloudwatch_event_rule" "access_key_creation" {
+  name        = "${local.project_name}-access-key-creation"
+  description = "Detect creation of new IAM access keys."
+
+  event_pattern = jsonencode({
+    source = ["aws.iam"]
+
+    detail-type = [
+      "AWS API Call via CloudTrail"
+    ]
+
+    detail = {
+      eventSource = [
+        "iam.amazonaws.com"
+      ]
+
+      eventName = [
+        "CreateAccessKey"
+      ]
+    }
+  })
+}
+
+resource "aws_cloudwatch_event_target" "access_key_creation" {
+  rule = aws_cloudwatch_event_rule.access_key_creation.name
+  arn  = aws_lambda_function.detector.arn
+}
+
+resource "aws_lambda_permission" "access_key_creation_eventbridge" {
+  statement_id  = "AllowAccessKeyCreationFromEventBridge"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.detector.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.access_key_creation.arn
+}

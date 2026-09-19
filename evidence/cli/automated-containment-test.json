@@ -1,0 +1,12 @@
+{
+  "test": "Automated public SSH containment",
+  "event": "AuthorizeSecurityGroupIngress",
+  "port": 22,
+  "public_cidr": "0.0.0.0/0",
+  "severity": "HIGH",
+  "response_mode": "contain",
+  "containment_action": "public_remote_access_revoked",
+  "security_group_attached_to_workload": false,
+  "rule_present_after_response": false,
+  "result": "PASS"
+}

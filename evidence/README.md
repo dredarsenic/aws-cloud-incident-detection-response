@@ -249,3 +249,32 @@ Shows the deployed EventBridge rule used to route GuardDuty findings into the in
 ### guardduty-sample-finding.json
 
 Contains a sanitized representation of the official AWS sample GuardDuty finding used to validate the integration.
+
+## Test 8 - Automated Public SSH Containment
+
+A temporary isolated security group was created for a controlled automated-response test. The security group was not attached to any EC2 instance or network interface.
+
+A real AWS `AuthorizeSecurityGroupIngress` API call opened TCP port 22 to `0.0.0.0/0`.
+
+The platform detected the CloudTrail event and classified it as a HIGH-severity public remote-access exposure.
+
+For this controlled test only, `response_mode` was changed from `alert` to `contain`.
+
+Observed response:
+
+- CloudTrail captured the real AWS API operation.
+- EventBridge routed the event to Lambda.
+- Lambda identified public SSH exposure.
+- The incident was created and evidence preserved.
+- Lambda invoked `RevokeSecurityGroupIngress`.
+- The public SSH rule was automatically removed.
+- SNS delivered the containment result.
+- The security group contained no ingress permissions after remediation.
+
+The test security group was isolated and not attached to a workload.
+
+After validation, the platform was returned to its default `alert` response mode and the temporary security group was deleted.
+
+### automated-containment-test.json
+
+Contains a sanitized record of the successful automated containment test.

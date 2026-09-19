@@ -73,6 +73,18 @@ PUBLIC_REMOTE_ACCESS_DETECTION = {
 }
 
 
+ACCESS_KEY_CREATION_DETECTION = {
+    "severity": "MEDIUM",
+    "title": "IAM access key created",
+    "mitre_attack": "T1098.001",
+    "recommended_action": (
+        "Verify that creation of the IAM access key was authorized and "
+        "necessary. If unexpected, deactivate and delete the credential "
+        "and investigate the identity responsible for creating it."
+    ),
+}
+
+
 ADMIN_POLICY_ARN = "arn:aws:iam::aws:policy/AdministratorAccess"
 
 ADMIN_ATTACHMENT_EVENTS = {
@@ -158,6 +170,9 @@ def detect(detail):
         and exposes_public_remote_access(request_parameters)
     ):
         return PUBLIC_REMOTE_ACCESS_DETECTION
+
+    if event_name == "CreateAccessKey":
+        return ACCESS_KEY_CREATION_DETECTION
 
     if identity.get("type") == "Root":
         return ROOT_ACTIVITY_DETECTION

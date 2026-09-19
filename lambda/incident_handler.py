@@ -11,6 +11,7 @@ from detections import detect
 dynamodb = boto3.resource("dynamodb")
 s3 = boto3.client("s3")
 sns = boto3.client("sns")
+ec2 = boto3.client("ec2")
 
 INCIDENT_TABLE = os.environ["INCIDENT_TABLE"]
 EVIDENCE_BUCKET = os.environ["EVIDENCE_BUCKET"]
@@ -139,11 +140,126 @@ def store_incident(incident):
     )
 
 
+def contain_public_remote_access(detail):
+    request_parameters = detail.get("requestParameters", {})
+    group_id = request_parameters.get("groupId")
+
+    permissions = (
+        request_parameters
+        .get("ipPermissions", {})
+        .get("items", [])
+    )
+
+    if not group_id or not permissions:
+        return {
+            "action": "containment_skipped",
+            "reason": (
+                "Missing security group or ingress permission data"
+            ),
+        }
+
+    revoked_permissions = []
+
+    for permission in permissions:
+        from_port = permission.get("fromPort")
+        to_port = permission.get("toPort")
+        protocol = permission.get("ipProtocol", "tcp")
+
+        if from_port is None or to_port is None:
+            continue
+
+        exposes_remote_admin = any(
+            from_port <= port <= to_port
+            for port in (22, 3389)
+        )
+
+        if not exposes_remote_admin:
+            continue
+
+        ipv4_ranges = []
+
+        for ip_range in (
+            permission
+            .get("ipRanges", {})
+            .get("items", [])
+        ):
+            if ip_range.get("cidrIp") == "0.0.0.0/0":
+                ipv4_ranges.append(
+                    {
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                )
+
+        ipv6_ranges = []
+
+        for ip_range in (
+            permission
+            .get("ipv6Ranges", {})
+            .get("items", [])
+        ):
+            if ip_range.get("cidrIpv6") == "::/0":
+                ipv6_ranges.append(
+                    {
+                        "CidrIpv6": "::/0"
+                    }
+                )
+
+        if not ipv4_ranges and not ipv6_ranges:
+            continue
+
+        revoke_permission = {
+            "IpProtocol": protocol,
+            "FromPort": from_port,
+            "ToPort": to_port,
+        }
+
+        if ipv4_ranges:
+            revoke_permission["IpRanges"] = ipv4_ranges
+
+        if ipv6_ranges:
+            revoke_permission["Ipv6Ranges"] = ipv6_ranges
+
+        ec2.revoke_security_group_ingress(
+            GroupId=group_id,
+            IpPermissions=[
+                revoke_permission
+            ],
+        )
+
+        revoked_permissions.append(
+            revoke_permission
+        )
+
+    if not revoked_permissions:
+        return {
+            "action": "containment_skipped",
+            "reason": (
+                "No publicly exposed SSH or RDP permission found"
+            ),
+        }
+
+    return {
+        "action": "public_remote_access_revoked",
+        "security_group": group_id,
+        "revoked_permissions": revoked_permissions,
+    }
+
+
 def send_alert(incident):
     subject = (
         f"[{incident['severity']}] "
         f"AWS Security Incident - "
         f"{incident['event_name']}"
+    )
+
+    containment = json.dumps(
+        incident.get(
+            "containment",
+            {
+                "action": "none"
+            },
+        ),
+        indent=2,
     )
 
     message = f"""
@@ -183,6 +299,9 @@ MITRE ATT&CK:
 Response Mode:
 {incident['response_mode']}
 
+Containment:
+{containment}
+
 Recommended Action:
 {incident['recommended_action']}
 
@@ -201,6 +320,7 @@ def handle_guardduty_finding(event):
     detail = event.get("detail", {})
 
     incident_id = generate_incident_id()
+
     evidence_key = preserve_evidence(
         incident_id,
         event,
@@ -248,12 +368,23 @@ def handle_guardduty_finding(event):
             "resource or credentials if the finding is confirmed."
         ),
         "response_mode": RESPONSE_MODE,
+        "containment": {
+            "action": "none",
+        },
         "evidence_key": evidence_key,
-        "guardduty_finding_id": detail.get("id", "unknown"),
-        "guardduty_severity": str(
-            detail.get("severity", "unknown")
+        "guardduty_finding_id": detail.get(
+            "id",
+            "unknown",
         ),
-        "created_at": datetime.now(timezone.utc).isoformat(),
+        "guardduty_severity": str(
+            detail.get(
+                "severity",
+                "unknown",
+            )
+        ),
+        "created_at": datetime.now(
+            timezone.utc
+        ).isoformat(),
     }
 
     store_incident(incident)
@@ -294,26 +425,73 @@ def lambda_handler(event, context):
         event,
     )
 
+    containment = {
+        "action": "none",
+    }
+
+    if (
+        RESPONSE_MODE == "contain"
+        and event_name == "AuthorizeSecurityGroupIngress"
+        and detection["title"]
+        == "Security group exposes SSH or RDP to the internet"
+    ):
+        try:
+            containment = contain_public_remote_access(
+                detail
+            )
+        except Exception as exc:
+            containment = {
+                "action": "containment_failed",
+                "error": str(exc),
+            }
+
     incident = {
         "incident_id": incident_id,
         "status": "OPEN",
         "severity": detection["severity"],
         "detection": detection["title"],
         "event_name": event_name,
-        "aws_account": event.get("account", "unknown"),
-        "region": event.get("region", "unknown"),
+        "aws_account": event.get(
+            "account",
+            "unknown",
+        ),
+        "region": event.get(
+            "region",
+            "unknown",
+        ),
         "principal": get_principal(detail),
-        "source_ip": detail.get("sourceIPAddress", "unknown"),
+        "source_ip": detail.get(
+            "sourceIPAddress",
+            "unknown",
+        ),
         "event_time": detail.get(
             "eventTime",
-            event.get("time", "unknown"),
+            event.get(
+                "time",
+                "unknown",
+            ),
         ),
-        "resource": "unknown",
+        "resource": (
+            detail
+            .get(
+                "requestParameters",
+                {},
+            )
+            .get(
+                "groupId",
+                "unknown",
+            )
+        ),
         "mitre_attack": detection["mitre_attack"],
-        "recommended_action": detection["recommended_action"],
+        "recommended_action": detection[
+            "recommended_action"
+        ],
         "response_mode": RESPONSE_MODE,
+        "containment": containment,
         "evidence_key": evidence_key,
-        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": datetime.now(
+            timezone.utc
+        ).isoformat(),
     }
 
     store_incident(incident)

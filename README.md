@@ -1,4 +1,6 @@
 # AWS Cloud Incident Detection & Automated Response
+\n**Status: ✅ Completed — v1.0 | 19 September 2026**
+
 
 **Detect. Investigate. Preserve. Respond.**
 
@@ -92,3 +94,13 @@ Testing confirmed:
 - SNS email alert delivery.
 
 See [`evidence/README.md`](evidence/README.md) for the deployment and testing evidence.
+
+## Project Completion
+
+Version **1.0** of this project was completed on **19 September 2026**.
+
+The implemented platform demonstrates AWS-native detection engineering, incident normalization, evidence preservation, security alerting, GuardDuty integration, contextual false-positive reduction, and controlled automated containment.
+
+Detailed completion notes are available in [`docs/PROJECT-COMPLETION.md`](docs/PROJECT-COMPLETION.md).
+
+Future enhancements will be developed as a separate v2 rather than extending the scope of this completed version.

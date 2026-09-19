@@ -55,6 +55,13 @@ resource "aws_iam_role_policy" "lambda" {
           "sns:Publish"
         ]
         Resource = aws_sns_topic.security_alerts.arn
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ec2:RevokeSecurityGroupIngress"
+        ]
+        Resource = "arn:aws:ec2:${var.aws_region}:${local.account_id}:security-group/*"
       }
     ]
   })
